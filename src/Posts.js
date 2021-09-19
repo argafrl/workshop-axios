@@ -3,8 +3,11 @@ import api from "./api/api";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
+
+  const [id, setId] = useState('')
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
+
   const [edit, setEdit] = useState(false)
   const [editIdx, setEditIdx] = useState('')
 
@@ -44,14 +47,17 @@ const Posts = () => {
     }
   }
 
-  const handleEdit = async (id) => {
+  const editPost = async (e) => {
     try{
-      const req = await api.put(`/posts`, {
+      e.preventDefault();
+      const req = await api.patch(`/posts/${id}`, {
         id: id,
         title: title,
         body: body
       });
       console.log(req)
+      console.log(req.data)
+      alert(req.data);
     }
     catch(err){
       console.log(err)
@@ -60,6 +66,7 @@ const Posts = () => {
 
   return (
     <div className="posts">
+      <div>
       <ul>
         { posts.map((post) => {
           return (
@@ -67,13 +74,19 @@ const Posts = () => {
               <li>
                 <h3>{post.title}</h3>
                 <p>{post.body}</p>
+                <button onClick={() => {
+                  setTitle(post.title);
+                  setBody(post.body);
+                  setId(post.id);
+                }}>Edit</button>
               </li>
             </div>
           )
         })}
       </ul>
+      </div>
 
-      <form onSubmit={addPost}>
+      <form onSubmit={editPost}>
         <p>Title</p>
         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
         <p>Body</p>
